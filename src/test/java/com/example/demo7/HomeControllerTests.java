@@ -6,7 +6,7 @@ import org.springframework.util.Assert;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-class ControllerTests {
+class HomeControllerTests {
 
     @Test
     void assertTest () {

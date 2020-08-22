@@ -3,3 +3,17 @@ spring:
     user:
       name: root
       password: root
+
+
+  thymeleaf:
+    cache: false
+
+  devtools:
+    livereload:
+      enabled: true
+    remote:
+      restart:
+        enabled: true
+
+  main:
+    allow-bean-definition-overriding: true
