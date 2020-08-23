@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+/** DB 저장소에서 계정 정보를 가져오기 위한 클래스*/
 @Service("userDetailsService")
 public class CustomUserDetailsService implements UserDetailsService {
 
