@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -28,6 +29,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired // TIP AuthenticationSuccessHandler 인터페이스 구현체가 2개의 @Component 를 가지고 있다면 @Qualifier("customAuthenticationSuccessHandler") 사용해야한다
     private AuthenticationSuccessHandler customAuthenticationSuccessHandler;
+
+    @Autowired
+    private AuthenticationFailureHandler customAuthenticationFailureHandler;
 
 
     @Override
@@ -70,7 +74,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .headers().addHeaderWriter(new StaticHeadersWriter("X-Content-Security-Policy", "script-src 'self'")).frameOptions().disable()
         .and()
                 .authorizeRequests()
-                .antMatchers("/", "/users", "/h2-console", "/h2-console/*").permitAll() // /users 회원가입 페이지 인증없이 누구나 접근하기 위함
+                .antMatchers("/", "/users", "/h2-console", "/h2-console/*", "/login*").permitAll() // /users 회원가입 페이지 인증없이 누구나 접근하기 위함
                 .antMatchers("/mypage").hasRole("USER")
                 .antMatchers("/message").hasRole("MANAGER")
                 .antMatchers("/config").hasRole("ADMIN")
@@ -82,6 +86,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .authenticationDetailsSource(formAuthenticationDetailsSource) // details 처리 클래스
                     .defaultSuccessUrl("/") // 로그인 성공 시 URL
                     .successHandler(customAuthenticationSuccessHandler) // 커스텀 핸들러
+                    .failureHandler(customAuthenticationFailureHandler) // 커스텀 핸들러
                     .permitAll() // login 페이지에 대해서는 모든 사용자가 접근 가능
         ;
     }
