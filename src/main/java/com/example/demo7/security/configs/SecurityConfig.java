@@ -1,6 +1,8 @@
 package com.example.demo7.security.configs;
 
+import com.example.demo7.security.common.FormAuthenticationDetailsSource;
 import com.example.demo7.security.provider.CustomAuthenticationProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +20,9 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private FormAuthenticationDetailsSource formAuthenticationDetailsSource;
 
 
     @Override
@@ -69,6 +74,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
                     .loginPage("/login") // 로그인 페이지 URL
                     .loginProcessingUrl("/login_proc") // action POST URL
+                    .authenticationDetailsSource(formAuthenticationDetailsSource) // details 처리 클래스
                     .defaultSuccessUrl("/") // 로그인 성공 시 URL
                     .permitAll() // login 페이지에 대해서는 모든 사용자가 접근 가능
         ;

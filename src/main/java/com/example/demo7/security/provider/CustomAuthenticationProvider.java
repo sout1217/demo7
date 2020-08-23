@@ -1,9 +1,11 @@
 package com.example.demo7.security.provider;
 
+import com.example.demo7.security.common.FormWebAuthenticationDetails;
 import com.example.demo7.security.service.AccountContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -38,6 +40,14 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         if (!passwordEncoder.matches(password, accountContext.getAccount().getPassword())) {
             // 일치하지 않는 경우 exception 발생
             throw new BadCredentialsException("BadCredentialsException");
+        }
+
+        // Authentication 안의 details 는 Object 이다 (cascading 가능)
+        // details 에는 기본적으로 Spring Security 가 처리한 remoteAddress 와 sessionId 에 정보도 담긴다
+        FormWebAuthenticationDetails formWebAuthenticationDetails = (FormWebAuthenticationDetails) authentication.getDetails();
+        String secretKey = formWebAuthenticationDetails.getSecretKey();
+        if (secretKey == null || !"secret".equals(secretKey)) {
+            throw new InsufficientAuthenticationException("InsufficientAuthenticationException");
         }
 
         // UsernamePasswordAuthenticationToken 생성 (DB 에서 가져온 account 와, 비밀번호는 null,  DB 에서 가져온 Role 으로 생성함 ) - account 에는 username, email, age 등 포함되어있다.
