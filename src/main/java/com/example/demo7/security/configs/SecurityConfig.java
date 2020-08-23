@@ -67,6 +67,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
         .and()
                 .formLogin()
+                    .loginPage("/login") // 로그인 페이지 URL
+                    .loginProcessingUrl("/login_proc") // action POST URL
+                    .defaultSuccessUrl("/") // 로그인 성공 시 URL
+                    .permitAll() // login 페이지에 대해서는 모든 사용자가 접근 가능
         ;
     }
 }
