@@ -1,9 +1,11 @@
 package com.example.demo7.security.configs;
 
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -12,6 +14,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        // [선택 1] static 리소스 보안 적용 X (permitAll() 과 다른 점은 보안필터 접근 하기 전에 처리한다)
+        web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+
+        // [선택 2]
+//        web.ignoring().antMatchers("/css/**");
+//        web.ignoring().antMatchers("/images/**");
+//        web.ignoring().antMatchers("/js/**");
+    }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {

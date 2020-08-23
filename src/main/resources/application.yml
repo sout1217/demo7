@@ -4,7 +4,6 @@ spring:
       name: root
       password: root
 
-
   thymeleaf:
     cache: false
 
@@ -17,3 +16,12 @@ spring:
 
   main:
     allow-bean-definition-overriding: true
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        jdbc.lob.non_contextual_creation: true
