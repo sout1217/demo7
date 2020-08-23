@@ -1,9 +1,9 @@
 package com.example.demo7.security.configs;
 
 import com.example.demo7.security.common.FormAuthenticationDetailsSource;
+import com.example.demo7.security.handler.CustomAccessDeniedHandler;
 import com.example.demo7.security.provider.CustomAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
@@ -76,7 +77,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/", "/users", "/h2-console", "/h2-console/*", "/login*").permitAll() // /users 회원가입 페이지 인증없이 누구나 접근하기 위함
                 .antMatchers("/mypage").hasRole("USER")
-                .antMatchers("/message").hasRole("MANAGER")
+                .antMatchers("/messages").hasRole("MANAGER")
                 .antMatchers("/config").hasRole("ADMIN")
                 .anyRequest().authenticated()
         .and()
@@ -88,6 +89,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .successHandler(customAuthenticationSuccessHandler) // 커스텀 핸들러
                     .failureHandler(customAuthenticationFailureHandler) // 커스텀 핸들러
                     .permitAll() // login 페이지에 대해서는 모든 사용자가 접근 가능
+        .and()
+                .exceptionHandling()
+                .accessDeniedHandler(accessDeniedHandler())
         ;
+    }
+
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        CustomAccessDeniedHandler accessDeniedHandler = new CustomAccessDeniedHandler();
+        accessDeniedHandler.setErrorPage("/denied");
+        return accessDeniedHandler;
     }
 }
