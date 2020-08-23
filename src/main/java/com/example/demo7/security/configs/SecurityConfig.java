@@ -10,6 +10,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.header.writers.StaticHeadersWriter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -48,8 +50,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .csrf().requireCsrfProtectionMatcher(new AntPathRequestMatcher("!/h2-console/**"))
+        .and()
+                .headers().addHeaderWriter(new StaticHeadersWriter("X-Content-Security-Policy", "script-src 'self'")).frameOptions().disable()
+        .and()
                 .authorizeRequests()
-                .antMatchers("/").permitAll()
+                .antMatchers("/", "/users", "/h2-console", "/h2-console/*").permitAll() // /users 회원가입 페이지 인증없이 누구나 접근하기 위함
                 .antMatchers("/mypage").hasRole("USER")
                 .antMatchers("/message").hasRole("MANAGER")
                 .antMatchers("/config").hasRole("ADMIN")

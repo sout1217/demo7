@@ -17,6 +17,7 @@ spring:
   main:
     allow-bean-definition-overriding: true
 
+
   jpa:
     hibernate:
       ddl-auto: create
@@ -25,3 +26,11 @@ spring:
         format_sql: true
         show_sql: true
         jdbc.lob.non_contextual_creation: true
+
+  datasource:
+    url: jdbc:h2:mem:default
+    driver-class-name: org.h2.Driver
+
+  h2:
+    console:
+      enabled: true
