@@ -3,6 +3,7 @@ package com.example.demo7.security.configs;
 import com.example.demo7.security.common.FormAuthenticationDetailsSource;
 import com.example.demo7.security.provider.CustomAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -23,6 +25,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private FormAuthenticationDetailsSource formAuthenticationDetailsSource;
+
+    @Autowired // TIP AuthenticationSuccessHandler 인터페이스 구현체가 2개의 @Component 를 가지고 있다면 @Qualifier("customAuthenticationSuccessHandler") 사용해야한다
+    private AuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
 
     @Override
@@ -76,6 +81,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .loginProcessingUrl("/login_proc") // action POST URL
                     .authenticationDetailsSource(formAuthenticationDetailsSource) // details 처리 클래스
                     .defaultSuccessUrl("/") // 로그인 성공 시 URL
+                    .successHandler(customAuthenticationSuccessHandler) // 커스텀 핸들러
                     .permitAll() // login 페이지에 대해서는 모든 사용자가 접근 가능
         ;
     }
