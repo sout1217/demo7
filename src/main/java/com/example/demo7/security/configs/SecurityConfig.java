@@ -1,12 +1,15 @@
 package com.example.demo7.security.configs;
 
 import com.example.demo7.security.common.FormAuthenticationDetailsSource;
+import com.example.demo7.security.filter.AjaxLoginProcessingFilter;
 import com.example.demo7.security.handler.CustomAccessDeniedHandler;
 import com.example.demo7.security.provider.CustomAuthenticationProvider;
+import com.example.demo7.security.token.AjaxAuthenticationToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,6 +21,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -66,19 +71,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .csrf().requireCsrfProtectionMatcher(new AntPathRequestMatcher("!/h2-console/**"))
+                .csrf()
+                    .requireCsrfProtectionMatcher(new AntPathRequestMatcher("!/h2-console/**"))
         .and()
                 .headers().addHeaderWriter(new StaticHeadersWriter("X-Content-Security-Policy", "script-src 'self'")).frameOptions().disable()
         .and()
                 .authorizeRequests()
-                .antMatchers("/", "/users", "/h2-console", "/h2-console/*", "/login*").permitAll() // /users 회원가입 페이지 인증없이 누구나 접근하기 위함
                 .antMatchers("/mypage").hasRole("USER")
                 .antMatchers("/messages").hasRole("MANAGER")
                 .antMatchers("/config").hasRole("ADMIN")
+                .antMatchers("/**").permitAll()
                 .anyRequest().authenticated()
         .and()
                 .formLogin()
@@ -91,8 +96,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .permitAll() // login 페이지에 대해서는 모든 사용자가 접근 가능
         .and()
                 .exceptionHandling()
+                .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")) // 추가
+                .accessDeniedPage("/denied") // 추가
                 .accessDeniedHandler(accessDeniedHandler())
+        .and()
+                .addFilterBefore(ajaxLoginProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
         ;
+    }
+
+    @Bean
+    public AjaxLoginProcessingFilter ajaxLoginProcessingFilter() throws Exception {
+        AjaxLoginProcessingFilter ajaxLoginProcessingFilter = new AjaxLoginProcessingFilter();
+        ajaxLoginProcessingFilter.setAuthenticationManager(authenticationManagerBean());
+        return ajaxLoginProcessingFilter;
     }
 
     @Bean
@@ -101,4 +117,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         accessDeniedHandler.setErrorPage("/denied");
         return accessDeniedHandler;
     }
+
 }
