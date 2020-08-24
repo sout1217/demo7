@@ -1,6 +1,8 @@
 package com.example.demo7.security.configs;
 
 import com.example.demo7.security.filter.AjaxLoginProcessingFilter;
+import com.example.demo7.security.handler.AjaxAuthenticationFailureHandler;
+import com.example.demo7.security.handler.AjaxAuthenticationSuccessHandler;
 import com.example.demo7.security.provider.AjaxAuthenticationProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +29,18 @@ public class AjaxSecurityConfig extends WebSecurityConfigurerAdapter {
         return new AjaxAuthenticationProvider();
     }
 
+    @Bean
+    public AjaxAuthenticationSuccessHandler ajaxAuthenticationSuccessHandler() {
+        // 커스텀 SuccessHandler Bean 생성
+        return new AjaxAuthenticationSuccessHandler();
+    }
+
+    @Bean
+    public AjaxAuthenticationFailureHandler ajaxAuthenticationFailureHandler() {
+        // 커스텀 FailureHandler Bean 생성
+        return new AjaxAuthenticationFailureHandler();
+    }
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -47,7 +61,16 @@ public class AjaxSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public AjaxLoginProcessingFilter ajaxLoginProcessingFilter() throws Exception {
         AjaxLoginProcessingFilter ajaxLoginProcessingFilter = new AjaxLoginProcessingFilter();
+
+        // Manager
         ajaxLoginProcessingFilter.setAuthenticationManager(authenticationManagerBean());
+
+        // SuccessHandler
+        ajaxLoginProcessingFilter.setAuthenticationSuccessHandler(ajaxAuthenticationSuccessHandler());
+
+        // FailureHandler
+        ajaxLoginProcessingFilter.setAuthenticationFailureHandler(ajaxAuthenticationFailureHandler());
+
         return ajaxLoginProcessingFilter;
     }
 
