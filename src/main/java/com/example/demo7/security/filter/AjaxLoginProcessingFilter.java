@@ -51,5 +51,4 @@ public class AjaxLoginProcessingFilter extends AbstractAuthenticationProcessingF
         return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
 
     }
-
 }

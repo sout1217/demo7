@@ -35,6 +35,6 @@ public class AjaxAuthenticationFailureHandler implements AuthenticationFailureHa
             errorMessage = "Expired password";
         }
 
-        objectMapper.writeValue(response.getWriter(),errorMessage);
+        objectMapper.writeValue(response.getWriter(), errorMessage);
     }
 }

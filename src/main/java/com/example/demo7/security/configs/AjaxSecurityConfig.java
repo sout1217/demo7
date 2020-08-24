@@ -1,6 +1,8 @@
 package com.example.demo7.security.configs;
 
+import com.example.demo7.security.common.AjaxLoginAuthenticationEntryPoint;
 import com.example.demo7.security.filter.AjaxLoginProcessingFilter;
+import com.example.demo7.security.handler.AjaxAccessDeniedHandler;
 import com.example.demo7.security.handler.AjaxAuthenticationFailureHandler;
 import com.example.demo7.security.handler.AjaxAuthenticationSuccessHandler;
 import com.example.demo7.security.provider.AjaxAuthenticationProvider;
@@ -11,6 +13,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -47,9 +50,16 @@ public class AjaxSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .antMatcher("/api/**")
                 .authorizeRequests()
+                .antMatchers("/api/messages").hasRole("MANAGER")
                 .anyRequest().authenticated()
         .and()
                 .addFilterBefore(ajaxLoginProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
+        ;
+
+        http
+                .exceptionHandling()
+                .authenticationEntryPoint(new AjaxLoginAuthenticationEntryPoint()) // 인증을 받지 않은 사용자가 자원에 접근 했을 경우
+                .accessDeniedHandler(ajaxAccessDeniedHandler()) // 인증을 받았지만 권한을 만족하지 못하는 경우
         ;
 
         http
@@ -57,6 +67,10 @@ public class AjaxSecurityConfig extends WebSecurityConfigurerAdapter {
         ;
     }
 
+    @Bean
+    public AccessDeniedHandler ajaxAccessDeniedHandler() {
+        return new AjaxAccessDeniedHandler();
+    }
 
     @Bean
     public AjaxLoginProcessingFilter ajaxLoginProcessingFilter() throws Exception {
