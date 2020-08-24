@@ -24,15 +24,6 @@ X-Requested-With: XMLHttpRequest
 ###
 
 
-# 인증을 받지 않은 사용자의 요청 (인가 예외)
-GET http://localhost:8080/api/messages
-Content-Type: application/json
-X-Requested-With: XMLHttpRequest
-
-###
-
-
-# 인증 권한 모두 만족 하는 요청
 POST http://localhost:8080/api/login
 Content-Type: application/json
 X-Requested-With: XMLHttpRequest
@@ -44,23 +35,10 @@ X-Requested-With: XMLHttpRequest
 
 ###
 
-# 인증은 받았으나 권한을 만족 하지 않는 요청
-GET http://localhost:8080/api/messages
-Content-Type: application/json
-X-Requested-With: XMLHttpRequest
 
-{
-  "username": "user",
-  "password": "root"
-}
-
-###
-
-# 인증 권한 모두 만족하는 요청
 GET http://localhost:8080/api/messages
 Content-Type: application/json
 X-Requested-With: XMLHttpRequest
 
 ###
-
 

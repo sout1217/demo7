@@ -21,7 +21,6 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -72,9 +71,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .csrf()
-                    .requireCsrfProtectionMatcher(new AntPathRequestMatcher("!/h2-console/**"))
-        .and()
+                .csrf().disable();
+//                    .requireCsrfProtectionMatcher(new AntPathRequestMatcher("!/h2-console/**"))
+//        .and()
+        http
                 .headers().addHeaderWriter(new StaticHeadersWriter("X-Content-Security-Policy", "script-src 'self'")).frameOptions().disable()
         .and()
                 .authorizeRequests()

@@ -1,4 +1,4 @@
-package com.example.demo7.security.controller.login;
+package com.example.demo7.controller.login;
 
 import com.example.demo7.domain.Account;
 import org.springframework.security.core.Authentication;

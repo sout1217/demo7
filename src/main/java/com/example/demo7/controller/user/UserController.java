@@ -1,4 +1,4 @@
-package com.example.demo7.user;
+package com.example.demo7.controller.user;
 
 import com.example.demo7.domain.Account;
 import com.example.demo7.domain.AccountDto;

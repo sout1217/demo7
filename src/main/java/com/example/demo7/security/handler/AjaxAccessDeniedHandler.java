@@ -12,7 +12,10 @@ public class AjaxAccessDeniedHandler implements AccessDeniedHandler {
 
     // 인증은 됐으나 권한을 만족하지 못할 경우 접근 불가
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
+    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException)
+            throws IOException, ServletException {
+
         response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access is denied");
+
     }
 }
