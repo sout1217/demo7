@@ -1,6 +1,6 @@
 package com.example.demo7.security.service;
 
-import com.example.demo7.domain.Account;
+import com.example.demo7.domain.entity.Account;
 import com.example.demo7.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,8 +10,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /** DB 저장소에서 계정 정보를 가져오기 위한 클래스*/
 @Service("userDetailsService")
@@ -20,20 +23,26 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
-    @Override
+    @Autowired
+    private HttpServletRequest request;
+
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         Account account = userRepository.findByUsername(username);
-
         if (account == null) {
-            throw new UsernameNotFoundException("UsernameNotFoundException");
+            if (userRepository.countByUsername(username) == 0) {
+                throw new UsernameNotFoundException("No user found with username: " + username);
+            }
         }
+        Set<String> userRoles = account.getUserRoles()
+                .stream()
+                .map(userRole -> userRole.getRoleName())
+                .collect(Collectors.toSet());
 
-        List<GrantedAuthority> roles = new ArrayList<>();
-        roles.add(new SimpleGrantedAuthority(account.getRole()));
+        List<GrantedAuthority> collect = userRoles.stream()
+                                            .map(SimpleGrantedAuthority::new)
+                                            .collect(Collectors.toList());
 
-        AccountContext accountContext = new AccountContext(account, roles);
-
-        return accountContext;
+        return new AccountContext(account, collect);
     }
 }

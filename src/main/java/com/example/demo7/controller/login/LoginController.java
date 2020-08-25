@@ -1,6 +1,6 @@
 package com.example.demo7.controller.login;
 
-import com.example.demo7.domain.Account;
+import com.example.demo7.domain.entity.Account;
 import com.example.demo7.security.token.AjaxAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

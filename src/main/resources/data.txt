@@ -1,0 +1,15 @@
+-- user
+INSERT INTO account(id, username, password, email, age)
+VALUES(1, 'user', '{bcrypt}$2a$10$d4OahuadsBVpmLVMhyh3Ae63D6pRmX1d5hYZ7sIswkDW4wck.THQi', 'root@naver.com', 99);
+
+-- manager
+INSERT INTO account(id, username, password, email, age)
+VALUES(2, 'manager', '{bcrypt}$2a$10$d4OahuadsBVpmLVMhyh3Ae63D6pRmX1d5hYZ7sIswkDW4wck.THQi', 'manager@naver.com', 99);
+
+-- admin
+INSERT INTO account(id, username, password, email, age)
+VALUES(3, 'admin', '{bcrypt}$2a$10$d4OahuadsBVpmLVMhyh3Ae63D6pRmX1d5hYZ7sIswkDW4wck.THQi', 'admin@naver.com', 99);
+
+-- admin ROLE_ADMIN
+INSERT INTO ACCOUNT_ROLES(account_id, role_id)
+VALUES(3, 1);

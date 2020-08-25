@@ -1,7 +1,7 @@
 package com.example.demo7.controller.user;
 
-import com.example.demo7.domain.Account;
-import com.example.demo7.domain.AccountDto;
+import com.example.demo7.domain.entity.Account;
+import com.example.demo7.domain.dto.AccountDto;
 import com.example.demo7.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
