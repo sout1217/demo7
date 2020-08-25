@@ -1,6 +1,6 @@
 package com.example.demo7.security.service;
 
-import com.example.demo7.domain.Account;
+import com.example.demo7.domain.entity.Account;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 

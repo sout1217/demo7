@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 
 /** DB 에서 Username 으로 찾은 DB 계정에 대한 검증을 담당하는 클래스 */
 public class CustomAuthenticationProvider implements AuthenticationProvider {
@@ -24,6 +25,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     private PasswordEncoder passwordEncoder;
 
     @Override
+    @Transactional
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 
         // 매개변수에 있는 authentication 에는 form 에 입력한 id 와 password 가 담겨져 있다

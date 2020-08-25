@@ -2,12 +2,17 @@ package com.example.demo7.security.configs;
 
 import com.example.demo7.security.common.FormAuthenticationDetailsSource;
 import com.example.demo7.security.handler.CustomAccessDeniedHandler;
+import com.example.demo7.security.metadatasource.UrlFilterInvocationSecurityMetadataSource;
 import com.example.demo7.security.provider.CustomAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.access.AccessDecisionManager;
+import org.springframework.security.access.AccessDecisionVoter;
+import org.springframework.security.access.vote.AffirmativeBased;
+import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,11 +22,17 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Filter;
 
 @Configuration
 @EnableWebSecurity
@@ -78,10 +89,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .headers().addHeaderWriter(new StaticHeadersWriter("X-Content-Security-Policy", "script-src 'self'")).frameOptions().disable()
         .and()
                 .authorizeRequests()
-                .antMatchers("/mypage").hasRole("USER")
-                .antMatchers("/messages").hasRole("MANAGER")
-                .antMatchers("/config").hasRole("ADMIN")
-                .antMatchers("/**").permitAll()
+//                .antMatchers("/mypage").hasRole("USER")
+//                .antMatchers("/messages").hasRole("MANAGER")
+//                .antMatchers("/config").hasRole("ADMIN")
+//                .antMatchers("/**").permitAll()
                 .anyRequest().authenticated()
         .and()
                 .formLogin()
@@ -97,6 +108,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")) // 추가
                 .accessDeniedPage("/denied") // 추가
                 .accessDeniedHandler(accessDeniedHandler())
+        .and()
+                .addFilterBefore(customFilterSecurityInterceptor(), FilterSecurityInterceptor.class)
         ;
     }
 
@@ -107,4 +120,29 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return accessDeniedHandler;
     }
 
+    @Bean
+    public FilterSecurityInterceptor customFilterSecurityInterceptor() throws Exception {
+        FilterSecurityInterceptor filterSecurityInterceptor = new FilterSecurityInterceptor();
+        filterSecurityInterceptor.setSecurityMetadataSource(urlFilterInvocationSecurityMetadataSource());
+        filterSecurityInterceptor.setAccessDecisionManager(affirmativeBased());
+        filterSecurityInterceptor.setAuthenticationManager(authenticationManagerBean());
+        return filterSecurityInterceptor;
+    }
+
+    public AccessDecisionManager affirmativeBased() {
+        AffirmativeBased affirmativeBased = new AffirmativeBased(getAccessDecistionVoters());
+        return affirmativeBased;
+    }
+
+    public List<AccessDecisionVoter<?>> getAccessDecistionVoters() {
+        return Arrays.asList(new RoleVoter());
+    }
+
+
+    @Bean
+    public FilterInvocationSecurityMetadataSource urlFilterInvocationSecurityMetadataSource() {
+        return new UrlFilterInvocationSecurityMetadataSource();
+    }
+
 }
+

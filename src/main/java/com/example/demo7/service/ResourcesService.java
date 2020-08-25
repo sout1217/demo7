@@ -1,0 +1,15 @@
+package com.example.demo7.service;
+
+import com.example.demo7.domain.entity.Resources;
+
+import java.util.List;
+
+public interface ResourcesService {
+    Resources getResources(long id);
+
+    List<Resources> getResources();
+
+    void createResources(Resources Resources);
+
+    void deleteResources(long id);
+}
