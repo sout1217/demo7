@@ -1,6 +1,8 @@
 package com.example.demo7.controller.login;
 
 import com.example.demo7.domain.Account;
+import com.example.demo7.security.token.AjaxAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -11,11 +13,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.security.Principal;
 
 @Controller
 public class LoginController {
 
-    @GetMapping("/login")
+    @GetMapping({"/login", "/api/login"})
     public String login(@RequestParam(value = "error", required = false) String error,
                         @RequestParam(value = "exception", required = false) String exception, Model model) {
 
@@ -38,18 +41,20 @@ public class LoginController {
         return "redirect:/login";
     }
 
-    @GetMapping("/denied")
-    public String accessDenied(@RequestParam(value = "exception", required = false) String exception, Model model) {
+    @GetMapping({"/denied", "/api/denied"})
+    public String accessDenied(
+            @RequestParam(value = "exception", required = false) String exception,
+            Principal principal,
+            Model model) {
 
-        // 권한을 만족하지 못했을 뿐 인증은 되었기 때문에 SecurityContext 에서 인증 객체를 가져 올 수 있다
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Account account = null;
 
-        // CustomAuthenticationProvider 에서 UsernamePasswordAuthenticationToken(=authentication) 을 생성했을 때
-        // Object Principal 을 account 로 설정했기 때문에
-        // Account 클래스로 다운 캐스케이딩이 가능하다
-        Account account = (Account) authentication.getPrincipal();
+        if (principal instanceof UsernamePasswordAuthenticationToken) {
+            account = (Account) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
+        } else if (principal instanceof AjaxAuthenticationToken) {
+            account = (Account) ((AjaxAuthenticationToken) principal).getPrincipal();
+        }
 
-        // username 과 CustomAccessDeniedHandler 에서 넘어온 exception 을 model 에 담는다
         model.addAttribute("username", account.getUsername());
         model.addAttribute("exception", exception);
 

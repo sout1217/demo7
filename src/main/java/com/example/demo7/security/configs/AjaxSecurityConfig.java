@@ -54,8 +54,6 @@ public class AjaxSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/messages").hasRole("MANAGER")
                 .antMatchers("/api/login").permitAll() // 추가됨
                 .anyRequest().authenticated()
-//        .and()
-//                .addFilterBefore(ajaxLoginProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
         ;
 
         http
@@ -64,9 +62,9 @@ public class AjaxSecurityConfig extends WebSecurityConfigurerAdapter {
                 .accessDeniedHandler(ajaxAccessDeniedHandler()) // 인증을 받았지만 권한을 만족하지 못하는 경우
         ;
 
-        http
-                .csrf().disable()
-        ;
+//        http
+//                .csrf().disable()
+//        ;
 
         customconfigurerAjax(http);
     }
@@ -92,19 +90,5 @@ public class AjaxSecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
-    //    public AjaxLoginProcessingFilter ajaxLoginProcessingFilter() throws Exception {
-//        AjaxLoginProcessingFilter ajaxLoginProcessingFilter = new AjaxLoginProcessingFilter();
-//
-//        // Manager
-//        ajaxLoginProcessingFilter.setAuthenticationManager(authenticationManagerBean());
-//
-//        // SuccessHandler
-//        ajaxLoginProcessingFilter.setAuthenticationSuccessHandler(ajaxAuthenticationSuccessHandler());
-//
-//        // FailureHandler
-//        ajaxLoginProcessingFilter.setAuthenticationFailureHandler(ajaxAuthenticationFailureHandler());
-//
-//        return ajaxLoginProcessingFilter;
-//    }
 
 }

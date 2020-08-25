@@ -2,13 +2,10 @@ package com.example.demo7.security.token;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.SpringSecurityCoreVersion;
 
 import java.util.Collection;
 
 public class AjaxAuthenticationToken extends AbstractAuthenticationToken {
-
-//    private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
 
     // 이미 AbstractAuthenticationToken 의 구현된 클래스 UsernamePasswordAuthenticationToken 가 존재하기 때문에
     // 내용 일부를 그대로 가져다 사용한다
