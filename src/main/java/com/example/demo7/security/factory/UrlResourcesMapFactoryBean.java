@@ -2,7 +2,6 @@ package com.example.demo7.security.factory;
 
 import com.example.demo7.service.SecurityResourceService;
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
@@ -11,10 +10,10 @@ import java.util.List;
 
 public class UrlResourcesMapFactoryBean implements FactoryBean<LinkedHashMap<RequestMatcher, List<ConfigAttribute>>> {
 
-    @Autowired
     private SecurityResourceService securityResourceService;
 
     private LinkedHashMap<RequestMatcher, List<ConfigAttribute>> resourceMap;
+
 
     @Override
     public LinkedHashMap<RequestMatcher, List<ConfigAttribute>> getObject() throws Exception {
@@ -38,5 +37,9 @@ public class UrlResourcesMapFactoryBean implements FactoryBean<LinkedHashMap<Req
     @Override
     public boolean isSingleton() {
         return true;
+    }
+
+    public void setSecurityResourceService(SecurityResourceService securityResourceService) {
+        this.securityResourceService = securityResourceService;
     }
 }

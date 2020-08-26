@@ -6,6 +6,7 @@ import com.example.demo7.security.filter.PermitAllFilter;
 import com.example.demo7.security.handler.CustomAccessDeniedHandler;
 import com.example.demo7.security.metadatasource.UrlFilterInvocationSecurityMetadataSource;
 import com.example.demo7.security.provider.CustomAuthenticationProvider;
+import com.example.demo7.service.SecurityResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -13,8 +14,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.access.vote.AffirmativeBased;
-import org.springframework.security.access.vote.RoleVoter;
+import org.springframework.security.access.vote.RoleHierarchyVoter;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -32,7 +34,7 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
@@ -48,6 +50,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private AuthenticationFailureHandler customAuthenticationFailureHandler;
+
+    @Autowired
+    private SecurityResourceService securityResourceService;
 
     private String[] permitAllResources = {"/", "/login", "/user/login/**"};
 
@@ -118,15 +123,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return accessDeniedHandler;
     }
 
-//    @Bean
-//    public FilterSecurityInterceptor customFilterSecurityInterceptor() throws Exception {
-//        FilterSecurityInterceptor filterSecurityInterceptor = new FilterSecurityInterceptor();
-//        filterSecurityInterceptor.setSecurityMetadataSource(urlFilterInvocationSecurityMetadataSource());
-//        filterSecurityInterceptor.setAccessDecisionManager(affirmativeBased());
-//        filterSecurityInterceptor.setAuthenticationManager(authenticationManagerBean());
-//        return filterSecurityInterceptor;
-//    }
-
     @Bean
     public PermitAllFilter customFilterSecurityInterceptor() throws Exception {
         PermitAllFilter permitAllFilter = new PermitAllFilter(permitAllResources);
@@ -142,18 +138,38 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     public List<AccessDecisionVoter<?>> getAccessDecistionVoters() {
-        return Arrays.asList(new RoleVoter());
+
+        List<AccessDecisionVoter<? extends Object>> accessDecisionVoters = new ArrayList<>();
+        accessDecisionVoters.add(roleVoter());
+//        accessDecisionVoters.add(new RoleVoter());
+        return accessDecisionVoters;
+
+    }
+
+    @Bean
+    public AccessDecisionVoter<? extends Object> roleVoter() {
+        RoleHierarchyVoter roleHierarchyVoter = new RoleHierarchyVoter(roleHierarchy());
+        return roleHierarchyVoter;
+    }
+
+    @Bean
+    public RoleHierarchyImpl roleHierarchy() {
+        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+        return roleHierarchy;
     }
 
 
     @Bean
     public FilterInvocationSecurityMetadataSource urlFilterInvocationSecurityMetadataSource() throws Exception {
-        return new UrlFilterInvocationSecurityMetadataSource(urlResourcesMapFacotryBean().getObject());
+        return new UrlFilterInvocationSecurityMetadataSource(urlResourcesMapFactoryBean().getObject(), securityResourceService);
     }
 
-    @Bean
-    public UrlResourcesMapFactoryBean urlResourcesMapFacotryBean() {
+
+    private UrlResourcesMapFactoryBean urlResourcesMapFactoryBean() {
+
         UrlResourcesMapFactoryBean urlResourcesMapFactoryBean = new UrlResourcesMapFactoryBean();
+        urlResourcesMapFactoryBean.setSecurityResourceService(securityResourceService);
+
         return urlResourcesMapFactoryBean;
     }
 

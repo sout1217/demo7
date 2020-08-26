@@ -16,8 +16,12 @@ import java.util.List;
 @Service
 public class SecurityResourceService {
 
-    @Autowired
-    private ResourcesRepository resourcesRepository;
+    private final ResourcesRepository resourcesRepository;
+
+    public SecurityResourceService(ResourcesRepository resourcesRepository) {
+        this.resourcesRepository = resourcesRepository;
+    }
+
 
     public LinkedHashMap<RequestMatcher, List<ConfigAttribute>> getResourceList() {
 
