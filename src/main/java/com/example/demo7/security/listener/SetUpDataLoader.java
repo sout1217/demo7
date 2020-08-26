@@ -47,12 +47,40 @@ public class SetUpDataLoader implements ApplicationListener<ContextRefreshedEven
     }
 
     private void setupSecurityResources() {
-        Set<Role> roles = new HashSet<>();
+        Set<Role> adminRoles = new HashSet<>();
+        Set<Role> managerRoles = new HashSet<>();
+        Set<Role> userRoles = new HashSet<>();
+
+        Set<Role> adminRolesResources = new HashSet<>();
+        Set<Role> managerRolesResources = new HashSet<>();
+        Set<Role> userRolesResources = new HashSet<>();
+
 
         Role adminRole = createRoleIfNotFound("ROLE_ADMIN", "관리자");
-        roles.add(adminRole);
-        createResourcesIfNotFound("/admin/**", "", roles, "url");
-        Account account = createUserIfNotFound("admin", "root", "admin@gmail.com", "10", roles);
+        Role managerRole = createRoleIfNotFound("ROLE_MANAGER", "매니저");
+        Role userRole = createRoleIfNotFound("ROLE_USER", "유저");
+
+        adminRoles.add(adminRole);
+        adminRoles.add(managerRole);
+        adminRoles.add(userRole);
+
+        managerRoles.add(managerRole);
+        managerRoles.add(userRole);
+
+        userRoles.add(userRole);
+
+        createUserIfNotFound("admin", "root", "admin@gmail.com", "10", adminRoles);
+        createUserIfNotFound("manager", "root", "manager@gmail.com", "10", managerRoles);
+        createUserIfNotFound("user", "root", "user@gmail.com", "10", userRoles);
+
+        adminRolesResources.add(adminRole);
+        managerRolesResources.add(managerRole);
+        userRolesResources.add(userRole);
+
+        createResourcesIfNotFound("/admin/**", "", adminRolesResources, "url");
+        createResourcesIfNotFound("/mypage", "", userRolesResources, "url");
+        createResourcesIfNotFound("/messages", "", managerRolesResources, "url");
+        createResourcesIfNotFound("/config", "", adminRolesResources, "url");
 
     }
 

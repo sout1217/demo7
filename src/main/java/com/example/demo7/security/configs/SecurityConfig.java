@@ -1,9 +1,11 @@
 package com.example.demo7.security.configs;
 
 import com.example.demo7.security.common.FormAuthenticationDetailsSource;
+import com.example.demo7.security.factory.UrlResourcesMapFactoryBean;
 import com.example.demo7.security.handler.CustomAccessDeniedHandler;
 import com.example.demo7.security.metadatasource.UrlFilterInvocationSecurityMetadataSource;
 import com.example.demo7.security.provider.CustomAuthenticationProvider;
+import com.example.demo7.service.SecurityResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -32,7 +34,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Filter;
 
 @Configuration
 @EnableWebSecurity
@@ -89,10 +90,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .headers().addHeaderWriter(new StaticHeadersWriter("X-Content-Security-Policy", "script-src 'self'")).frameOptions().disable()
         .and()
                 .authorizeRequests()
-//                .antMatchers("/mypage").hasRole("USER")
-//                .antMatchers("/messages").hasRole("MANAGER")
-//                .antMatchers("/config").hasRole("ADMIN")
-//                .antMatchers("/**").permitAll()
                 .anyRequest().authenticated()
         .and()
                 .formLogin()
@@ -140,8 +137,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 
     @Bean
-    public FilterInvocationSecurityMetadataSource urlFilterInvocationSecurityMetadataSource() {
-        return new UrlFilterInvocationSecurityMetadataSource();
+    public FilterInvocationSecurityMetadataSource urlFilterInvocationSecurityMetadataSource() throws Exception {
+        return new UrlFilterInvocationSecurityMetadataSource(urlResourcesMapFacotryBean().getObject());
+    }
+
+    @Bean
+    public UrlResourcesMapFactoryBean urlResourcesMapFacotryBean() {
+        UrlResourcesMapFactoryBean urlResourcesMapFactoryBean = new UrlResourcesMapFactoryBean();
+        return urlResourcesMapFactoryBean;
     }
 
 }

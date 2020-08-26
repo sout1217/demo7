@@ -28,7 +28,8 @@ spring:
         jdbc.lob.non_contextual_creation: true
 
   datasource:
-    url: jdbc:h2:mem:default
+#    url: jdbc:h2:mem:default # 메모리 방식은 스프링 @Been 생성 후에 만들어지기 때문에, ResourcesRepository 에서 메모리 DB에 접근할 수 없다. 때문에 로컬에 저장하는 방법으로 바꿨습니다
+    url: jdbc:h2:./data/data # ddl-auto : create 한 후에 다시 update 로 바꿔서 하면 권한 설정이 가능합니다
     driver-class-name: org.h2.Driver
 
   h2:
