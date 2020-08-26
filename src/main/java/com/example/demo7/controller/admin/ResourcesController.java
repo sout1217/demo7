@@ -4,6 +4,7 @@ import com.example.demo7.domain.dto.ResourcesDto;
 import com.example.demo7.domain.entity.Resources;
 import com.example.demo7.domain.entity.Role;
 import com.example.demo7.repository.RoleRepository;
+import com.example.demo7.security.metadatasource.UrlFilterInvocationSecurityMetadataSource;
 import com.example.demo7.service.ResourcesService;
 import com.example.demo7.service.RoleService;
 import org.modelmapper.ModelMapper;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.HashSet;
 import java.util.List;
@@ -25,6 +27,27 @@ public class ResourcesController {
 
     @Autowired
     private RoleService roleService;
+
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
+    private UrlFilterInvocationSecurityMetadataSource filterInvocationSecurityMetadataSource;
+
+    @PostMapping("/admin/resources")
+    public String createResources(ResourcesDto resourcesDto) {
+        ModelMapper modelMapper = new ModelMapper();
+        Role role = roleRepository.findByRoleName(resourcesDto.getRoleName());
+        Set<Role> roles = new HashSet<>();
+        roles.add(role);
+        Resources resources = modelMapper.map(resourcesDto, Resources.class);
+        resources.setRoleSet(roles);
+
+        resourcesService.createResources(resources);
+        filterInvocationSecurityMetadataSource.reload();
+
+        return "redirect:/admin/resources";
+    }
 
     @GetMapping("/admin/resources")
     public String getResources(Model model) {
@@ -64,5 +87,13 @@ public class ResourcesController {
         model.addAttribute("resources", resourcesDto);
 
         return "admin/resource/detail";
+    }
+
+    @GetMapping("/admin/resources/delete/{id}")
+    public String removeResources(@PathVariable String id, Model model) {
+//        Resources resources = resourcesService.getResources(Long.valueOf(id));
+        resourcesService.deleteResources(Long.valueOf(id));
+        filterInvocationSecurityMetadataSource.reload();
+        return "redirect:/admin/resources";
     }
 }
