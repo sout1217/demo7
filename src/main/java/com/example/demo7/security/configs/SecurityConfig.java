@@ -6,6 +6,7 @@ import com.example.demo7.security.filter.PermitAllFilter;
 import com.example.demo7.security.handler.CustomAccessDeniedHandler;
 import com.example.demo7.security.metadatasource.UrlFilterInvocationSecurityMetadataSource;
 import com.example.demo7.security.provider.CustomAuthenticationProvider;
+import com.example.demo7.security.voter.IpAddressVoter;
 import com.example.demo7.service.SecurityResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -140,8 +141,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public List<AccessDecisionVoter<?>> getAccessDecistionVoters() {
 
         List<AccessDecisionVoter<? extends Object>> accessDecisionVoters = new ArrayList<>();
+        accessDecisionVoters.add(new IpAddressVoter(securityResourceService)); // 순서 중요
         accessDecisionVoters.add(roleVoter());
-//        accessDecisionVoters.add(new RoleVoter());
         return accessDecisionVoters;
 
     }

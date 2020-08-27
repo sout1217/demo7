@@ -1,13 +1,7 @@
 package com.example.demo7.security.listener;
 
-import com.example.demo7.domain.entity.Account;
-import com.example.demo7.domain.entity.Resources;
-import com.example.demo7.domain.entity.Role;
-import com.example.demo7.domain.entity.RoleHierarchy;
-import com.example.demo7.repository.ResourcesRepository;
-import com.example.demo7.repository.RoleHierarchyRepository;
-import com.example.demo7.repository.RoleRepository;
-import com.example.demo7.repository.UserRepository;
+import com.example.demo7.domain.entity.*;
+import com.example.demo7.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -34,6 +28,8 @@ public class SetUpDataLoader implements ApplicationListener<ContextRefreshedEven
     private PasswordEncoder passwordEncoder;
     @Autowired
     private RoleHierarchyRepository roleHierarchyRepository;
+    @Autowired
+    private AccessIpRepository accessIpRepository;
 
 
     private static AtomicInteger count = new AtomicInteger(0);
@@ -47,6 +43,7 @@ public class SetUpDataLoader implements ApplicationListener<ContextRefreshedEven
         }
 
         setupSecurityResources();
+        setupAccessIpData();
         
         alreadySetup = true;
     }
@@ -165,5 +162,18 @@ public class SetUpDataLoader implements ApplicationListener<ContextRefreshedEven
         }
 
         return resourcesRepository.save(resource);
+    }
+
+    @Transactional
+    public void setupAccessIpData() {
+        AccessIp byIpAddress = accessIpRepository.findByIpAddress("0:0:0:0:0:0:0:1");
+
+        if (byIpAddress == null) {
+            AccessIp accessIp = AccessIp.builder()
+                    .ipAddress("0:0:0:0:0:0:0:1")
+                    .build();
+            accessIpRepository.save(accessIp);
+        }
+
     }
 }
