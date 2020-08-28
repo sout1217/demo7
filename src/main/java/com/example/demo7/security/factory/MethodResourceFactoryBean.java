@@ -12,6 +12,7 @@ public class MethodResourceFactoryBean implements FactoryBean<LinkedHashMap<Stri
 
     private SecurityResourceService securityResourceService;
     private LinkedHashMap<String, List<ConfigAttribute>> resourceMap;
+    private String resourceType;
 
     public MethodResourceFactoryBean(SecurityResourceService securityResourceService) {
         this.securityResourceService = securityResourceService;
@@ -27,7 +28,23 @@ public class MethodResourceFactoryBean implements FactoryBean<LinkedHashMap<Stri
     }
 
     private void init() {
-        resourceMap = securityResourceService.getMethodResourceList();
+
+        if (resourceType.equals("method")) {
+                resourceMap = securityResourceService.getMethodResourceList();
+        } else if (resourceType.equals("pointcut")) {
+                resourceMap = securityResourceService.getPointcutResourceList();
+        }
+
+//        switch (resourceType) {
+//            case "method":
+//                resourceMap = securityResourceService.getMethodResourceList();
+//                break;
+//            case "pointcut":
+//                resourceMap = securityResourceService.getPointcutResourceList();
+//
+//                break;
+//        }
+
 
     }
 
@@ -41,4 +58,7 @@ public class MethodResourceFactoryBean implements FactoryBean<LinkedHashMap<Stri
         return true;
     }
 
+    public void setResourceType(String resourceType) {
+        this.resourceType = resourceType;
+    }
 }

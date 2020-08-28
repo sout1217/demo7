@@ -75,4 +75,25 @@ public class SecurityResourceService {
 
         return result;
     }
+
+    public LinkedHashMap<String, List<ConfigAttribute>> getPointcutResourceList() {
+
+                LinkedHashMap<String, List<ConfigAttribute>> result = new LinkedHashMap<>();
+
+                List<Resources> resourcesList = resourcesRepository.findAllPointcutResources();
+
+                resourcesList.forEach(resources -> {
+
+                    List<ConfigAttribute> configAttributes = new ArrayList<>();
+
+                    resources.getRoleSet().forEach(role -> {
+
+                        configAttributes.add(new SecurityConfig(role.getRoleName()));
+
+                    });
+            result.put(resources.getResourceName(), configAttributes);
+        });
+
+        return result;
+    }
 }
