@@ -35,8 +35,6 @@ public class IpAddressVoter implements AccessDecisionVoter<Object> {
 
         String remoteAddress = details.getRemoteAddress();
 
-        System.err.println(remoteAddress);
-
         List<String> accessIpList = securityResourceService.getAccessIpList();
 
         int result = ACCESS_DENIED; // -1

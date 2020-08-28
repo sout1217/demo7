@@ -22,7 +22,6 @@ public class SecurityResourceService {
 
     private final AccessIpRepository accessIpRepository;
 
-    // @Bean 설정해주지 않아도, @Repository 가 @Service 생성자에 자동주입
     public SecurityResourceService(ResourcesRepository resourcesRepository, AccessIpRepository accessIpRepository) {
         this.resourcesRepository = resourcesRepository;
         this.accessIpRepository = accessIpRepository;
@@ -42,9 +41,9 @@ public class SecurityResourceService {
 
                 configAttributes.add(new SecurityConfig(role.getRoleName()));
 
-                result.put(new AntPathRequestMatcher(resources.getResourceName()), configAttributes);
-
             });
+            result.put(new AntPathRequestMatcher(resources.getResourceName()), configAttributes);
+            // (이전 글에서 잘못 작성되었다) Resource 하나 당 여러개의 Role 들어가야 하기 때문에 이 구문은 밖으로 빼주어야 한다
         });
 
         return result;
@@ -54,5 +53,26 @@ public class SecurityResourceService {
         return accessIpRepository.findAll().stream()
                 .map(AccessIp::getIpAddress)
                 .collect(Collectors.toList());
+    }
+
+    public LinkedHashMap<String, List<ConfigAttribute>> getMethodResourceList() {
+
+        LinkedHashMap<String, List<ConfigAttribute>> result = new LinkedHashMap<>();
+
+        List<Resources> resourcesList = resourcesRepository.findAllMethodResources();
+
+        resourcesList.forEach(resources -> {
+
+            List<ConfigAttribute> configAttributes = new ArrayList<>();
+
+            resources.getRoleSet().forEach(role -> {
+
+                configAttributes.add(new SecurityConfig(role.getRoleName()));
+
+            });
+            result.put(resources.getResourceName(), configAttributes);
+        });
+
+        return result;
     }
 }
